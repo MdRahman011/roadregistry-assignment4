@@ -1,0 +1,6 @@
+/target/
+.idea/
+*.iml
+.vscode/
+persons.txt
+demerits.txt
