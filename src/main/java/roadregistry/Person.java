@@ -51,6 +51,50 @@ public class Person {
     }
 }
 
+     public String addDemeritPoints(String personID, int points, String offenseDate, String birthDate) {
+    if (!isValidBirthDate(offenseDate) ||  points < 1 || points > 6) {
+        return "Failed";
+    }
+
+    try {
+        java.io.File file = new java.io.File("demerits.txt");
+        java.util.List<String> lines = file.exists() ? java.nio.file.Files.readAllLines(file.toPath()) : new java.util.ArrayList<>();
+        java.util.List<String> updatedLines = new java.util.ArrayList<>();
+        int totalPointsLast2Years = 0;
+
+        java.time.LocalDate today = java.time.LocalDate.now();
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        java.time.LocalDate offense = java.time.LocalDate.parse(offenseDate, formatter);
+        java.time.LocalDate dob = java.time.LocalDate.parse(birthDate, formatter);
+        int age = java.time.Period.between(dob, today).getYears();
+
+        for (String line : lines) {
+            String[] parts = line.split("\\|");
+            if (parts.length >= 4 && parts[0].equals(personID)) {
+                java.time.LocalDate prevOffense = java.time.LocalDate.parse(parts[2], formatter);
+                if (java.time.temporal.ChronoUnit.DAYS.between(prevOffense, today) <= 730) {
+                    totalPointsLast2Years += Integer.parseInt(parts[1]);
+                }
+            }
+            updatedLines.add(line);
+        }
+
+        totalPointsLast2Years += points;
+        boolean suspended = (age < 21 && totalPointsLast2Years > 6) || (age >= 21 && totalPointsLast2Years > 12);
+
+        updatedLines.add(personID + "|" + points + "|" + offenseDate + "|" + (suspended ? "true" : "false"));
+        java.nio.file.Files.write(file.toPath(), updatedLines);
+        return "Success";
+
+    } catch (Exception e) {
+        return "Failed";
+    }
+}
+
+
+
+
+
 
     // Checks if person ID has correct format: 10 characters, specific pattern
     private boolean isValidPersonID(String id) {

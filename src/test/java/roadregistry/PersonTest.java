@@ -93,4 +93,46 @@ public class PersonTest {
         boolean result = person.updatePersonalDetails("99!!0000ZZ", "33|Main St|Werribee|Victoria|Australia", "10-10-1990");
         assertFalse(result);
     }
+
+    //Unit Test for addDemeritPointsFunction
+    @Test
+    public void testAddDemeritPoints_ValidUnder21NotSuspended() {
+    Person person = new Person();
+    String result = person.addDemeritPoints("23@#CD!%AB", 3, "01-06-2024", "01-01-2006");
+    assertEquals("Success", result);
+    }
+
+    @Test
+    public void testAddDemeritPoints_InvalidDateFormat() {
+    Person person = new Person();
+    String result = person.addDemeritPoints("23@#CD!%AB", 2, "2024-06-01", "01-01-2000");
+    assertEquals("Failed", result);
+    }
+
+    @Test
+    public void testAddDemeritPoints_InvalidPointRange() {
+    Person person = new Person();
+    String result = person.addDemeritPoints("23@#CD!%AB", 10, "01-06-2024", "01-01-2000");
+    assertEquals("Failed", result);
+    }
+
+    @Test
+    public void testAddDemeritPoints_SuspensionOver21() {
+    Person person = new Person();
+    for (int i = 0; i < 3; i++) {
+        person.addDemeritPoints("23@#CD!%AB", 4, "01-06-2024", "01-01-1990");
+    }
+    String result = person.addDemeritPoints("23@#CD!%AB", 1, "01-06-2024", "01-01-1990");
+    assertEquals("Success", result);
+    }
+
+    @Test
+    public void testAddDemeritPoints_SuspensionUnder21() {
+    Person person = new Person();
+    for (int i = 0; i < 2; i++) {
+        person.addDemeritPoints("23@#CD!%XY", 3, "01-06-2024", "01-01-2008");
+    }
+    String result = person.addDemeritPoints("23@#CD!%XY", 1, "01-06-2024", "01-01-2008");
+    assertEquals("Success", result);
+    }
 }
