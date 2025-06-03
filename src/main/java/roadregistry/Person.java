@@ -38,4 +38,14 @@ public class Person {
     public static List<Person> getRegistry() {
         return registry;
     }
+
+    public static Person getPersonByLicense(String licenseNumber) {
+    for (Person p : personList) {
+        if (p.licenseNumber.equals(licenseNumber)) {
+            return p;
+        }
+    }
+    return null;
+}
+
 }

@@ -1,6 +1,8 @@
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
+import roadregistry.Person;
+
 public class PersonTest {
 
     // --- addPerson Tests ---
@@ -104,4 +106,18 @@ public class PersonTest {
         }
         assertTrue(p.addDemeritPoints(1, "02-06-2025").equals("Success"));
     }
+
+   
+    public void testGetPersonByLicense_Exists() {
+    Person.addPerson("Ali", 25, "LIC777", "Melbourne");
+    Person p = Person.getPersonByLicense("LIC777");
+    assertNotNull(p);
+    assertEquals("Ali", p.name);
+}
+
+    public void testGetPersonByLicense_NotExists() {
+    Person p = Person.getPersonByLicense("FAKELIC");
+    assertNull(p);
+}
+
 }
