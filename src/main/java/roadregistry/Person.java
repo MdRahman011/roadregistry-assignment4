@@ -11,7 +11,7 @@ public class Person {
         if (!isValidPersonID(personID) || !isValidAddress(address) || !isValidBirthDate(birthDate)) {
             return false;
         }
-
+   
         try (FileWriter writer = new FileWriter("persons.txt", true)) {
             String line = personID + "|" + firstName + "|" + lastName + "|" + address + "|" + birthDate + "\n";
             writer.write(line);
@@ -23,6 +23,7 @@ public class Person {
 
     // Updates address and birth date for a given personID if record exists and input is valid
     public boolean updatePersonalDetails(String personID, String newAddress, String newBirthDate) {
+    // Validate fields before trying to update
     if (!isValidPersonID(personID) || !isValidAddress(newAddress) || !isValidBirthDate(newBirthDate)) {
         return false;
     }
@@ -31,6 +32,8 @@ public class Person {
         java.io.File inputFile = new java.io.File("persons.txt");
         java.util.List<String> lines = java.nio.file.Files.readAllLines(inputFile.toPath());
         boolean found = false;
+
+    // Find and replace the matching personID line
 
         for (int i = 0; i < lines.size(); i++) {
             String[] parts = lines.get(i).split("\\|");
@@ -43,6 +46,8 @@ public class Person {
 
         if (!found) return false;
 
+    // Write updated list back to file
+
         java.nio.file.Files.write(inputFile.toPath(), lines);
         return true;
 
@@ -51,11 +56,13 @@ public class Person {
     }
 }
 
+// Adds demerit points to a person's record and calculates suspension status
      public String addDemeritPoints(String personID, int points, String offenseDate, String birthDate) {
+// Check basic validation for date and point range
     if (!isValidBirthDate(offenseDate) ||  points < 1 || points > 6) {
         return "Failed";
     }
-
+  
     try {
         java.io.File file = new java.io.File("demerits.txt");
         java.util.List<String> lines = file.exists() ? java.nio.file.Files.readAllLines(file.toPath()) : new java.util.ArrayList<>();
@@ -67,6 +74,8 @@ public class Person {
         java.time.LocalDate offense = java.time.LocalDate.parse(offenseDate, formatter);
         java.time.LocalDate dob = java.time.LocalDate.parse(birthDate, formatter);
         int age = java.time.Period.between(dob, today).getYears();
+
+    // Loop through existing demerits to calculate total within last 2 years
 
         for (String line : lines) {
             String[] parts = line.split("\\|");
@@ -80,6 +89,7 @@ public class Person {
         }
 
         totalPointsLast2Years += points;
+    // Determine suspension status based on age and total points
         boolean suspended = (age < 21 && totalPointsLast2Years > 6) || (age >= 21 && totalPointsLast2Years > 12);
 
         updatedLines.add(personID + "|" + points + "|" + offenseDate + "|" + (suspended ? "true" : "false"));
@@ -113,7 +123,8 @@ public class Person {
         String lastTwo = id.substring(8, 10);
         return lastTwo.matches("[A-Z]{2}");
     }
-
+    
+// Checks if address is in correct format and from Victoria
     private boolean isValidAddress(String address) {
         String[] parts = address.split("\\|");
         return parts.length == 5 && parts[3].trim().equalsIgnoreCase("Victoria");
